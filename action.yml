@@ -1,0 +1,23 @@
+name: 'Jacoco report'
+description: 'This is a basic github action for jacoco report'
+inputs:
+  path:
+    description: 'path of the generated jacoco xml file'
+    required: true
+  token:
+    description: 'Github personal token to add commits to PR'
+    required: true
+  title:
+    description: 'Optional title for the PR comment'
+    required: false
+outputs:
+  coverage-overall:
+    description: 'The overall coverage of the job'
+
+runs:
+  using: node16
+  main: 'dist/index.js'
+
+branding:
+  icon: file-text
+  color: green
