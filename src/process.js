@@ -14,6 +14,8 @@ function getPackagesCoverage(packages) {
         const value = {};
         value.name = item['$']['name'];
         value.coverage = getDetailedCoverage(item['counter']);
+
+        coverage.push(value);
     });
 
     return coverage;
