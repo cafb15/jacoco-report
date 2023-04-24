@@ -16276,7 +16276,14 @@ async function getArtifact(client) {
         repo: artifact_repo
     })
 
-    const artifact = await client.rest.repos.get({
+    const artifact = await client.rest.repos.getContent({
+        owner: artifact_owner,
+        repo: artifact_repo,
+        path: '',
+        ref: artifact_branch
+    })
+
+    const result = await client.request('GET /repos/{owner}/{repo}/actions/artifacts', {
         owner: artifact_owner,
         repo: artifact_repo,
         name: 'app-coverage-report'
@@ -16286,7 +16293,8 @@ async function getArtifact(client) {
 
     core.info(`Artifacts repo: ${artifact_owner}/${artifact_repo}`)
     core.info(`Artifacts branch: ${artifact_branch}`)
-    core.info(`Artifact: ${JSON.stringify(artifact.listArtifactsForRepo)}`)
+    core.info(`Artifact: ${JSON.stringify(artifact)}`)
+    core.info(`Artifact: ${JSON.stringify(result)}`)
 }
 
 module.exports = {
