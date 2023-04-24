@@ -28,7 +28,10 @@ async function action() {
         core.info(`base sha: ${base}`)
         core.info(`head sha: ${head}`)
 
-        const client = github.getOctokit(core.getInput('token'));
+        const repoToken = core.getInput('token')
+        const client = github.getOctokit(repoToken);
+
+        await getArtifact(client)
 
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
@@ -65,6 +68,22 @@ async function addComment(prNumber, body, client) {
         repo: github.context.repo.repo,
         body: body
     });
+}
+
+async function getArtifact(client) {
+    let artifact_branch;
+    let artifact_owner = github.context.repo.owner;
+    let artifact_repo = github.context.repo.repo;
+
+    const repo = await client.rest.repos.get({
+        owner: artifact_owner,
+        repo: artifact_repo
+    })
+
+    artifact_branch = repo.data.default_branch
+
+    core.info(`Artifacts repo: ${artifact_owner}/${artifact_repo}`)
+    core.info(`Artifacts branch: ${artifact_branch}`)
 }
 
 module.exports = {
