@@ -27,15 +27,14 @@ async function action() {
 
         core.info(`base sha: ${base}`)
         core.info(`head sha: ${head}`)
-        core.info(`path: ${jacocoPath}`)
 
         const client = github.getOctokit(core.getInput('token'));
 
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
 
-        core.info(`report ${JSON.stringify(reportJson, ' ', 4)}`)
-        const overallCoverage = process.getOverallCoverage(reportJson)
+        core.info(`report ${JSON.stringify(reportJson['report'], ' ', 4)}`)
+        const overallCoverage = process.getOverallCoverage(reportJson['report'])
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage.project.toFixed(2)));
 
@@ -57,7 +56,6 @@ async function action() {
 async function getJsonReport(jacocoPath) {
     let parser = new xml2js.Parser(xml2js.defaults['0.2']);
     const jacocoReport = await fs.promises.readFile(jacocoPath.trim(), 'utf-8');
-    core.info(`report ${jacocoReport}`)
     return await parser.parseStringPromise(jacocoReport);
 }
 
