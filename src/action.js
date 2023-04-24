@@ -90,7 +90,7 @@ async function getArtifact(client) {
 
     core.info(`Artifacts repo: ${artifact_owner}/${artifact_repo}`)
     core.info(`Artifacts branch: ${artifact_branch}`)
-    core.info(`Artifact: ${JSON.stringify(artifact)}`)
+    core.info(`Artifact: ${JSON.stringify(artifact.listArtifactsForRepo)}`)
 }
 
 module.exports = {
