@@ -31,9 +31,9 @@ function getTitle(title) {
     }
 }
 
-function getRow(name, instructionCoverage, branchCoverage) {
-    let status = getStatus(instructionCoverage);
-    return `|${name}|${formatCoverage(instructionCoverage)}|${formatCoverage(branchCoverage)}|${status}|`;
+function getRow(name, coverage) {
+    let status = getStatus(coverage.instructionPercentage);
+    return `|${name}|${formatCoverage(coverage.instructionPercentage)}|${formatCoverage(coverage.branchPercentage)}|${status}|`;
 }
 
 function getStatus(coverage) {
