@@ -15,8 +15,9 @@ function getProjectCoverage(report) {
 
     const covered = coverage.covered
     const missed = coverage.missed
+    coverage.percent = parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
 
-    return parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
+    return coverage;
 }
 
 function getModuleCoverage(report) {
