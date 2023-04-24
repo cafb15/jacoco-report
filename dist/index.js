@@ -16231,7 +16231,9 @@ async function action() {
 
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
         core.info(`overall: ${JSON.stringify(overallCoverage, ' ', 4)}`);
-        core.info(`coverage: ${JSON.stringify(reportJson, ' ', 4)}`);
+
+        const report = reportJson['report'];
+        printPackages(report['package']);
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage.project.percentage.toFixed(2)));
 
@@ -16248,6 +16250,16 @@ async function action() {
     } catch (error) {
         core.setFailed(error);
     }
+}
+
+function printPackages(packages) {
+    packages.forEach((item) => {
+        const value = {};
+        value.name = item['$']['name'];
+        value.counter = item['counter'];
+
+        core.info(`coverage: ${JSON.stringify(value, ' ', 4)}`);
+    });
 }
 
 async function getJsonReport(jacocoPath) {
