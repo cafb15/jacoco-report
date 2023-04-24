@@ -21,7 +21,7 @@ function getOverallTable(coverage) {
     });
 
     //return tableHeader + '\n' + tableStructure + '\n' + content + '\n' + footer;
-    return `${tableHeader}\n${tableStructure}\n${footer}`;
+    return `${tableHeader}\n${tableStructure}\n${content}\n${footer}`;
 }
 
 function getTitle(title) {
