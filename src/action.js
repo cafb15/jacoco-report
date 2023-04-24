@@ -33,6 +33,7 @@ async function action() {
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
 
+        core.info(`report ${JSON.stringify(reportJson, ' ', 4)}`)
         const overallCoverage = process.getOverallCoverage(reportJson)
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage.project.toFixed(2)));
