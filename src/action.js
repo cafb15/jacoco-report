@@ -28,15 +28,13 @@ async function action() {
         core.info(`base sha: ${base}`)
         core.info(`head sha: ${head}`)
 
-        const repoToken = core.getInput('token')
-        const client = github.getOctokit(repoToken);
-
-        await getArtifact(client)
+        const client = github.getOctokit(core.getInput('token'));
 
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
 
-        const overallCoverage = process.getOverallCoverage(reportJson['report'])
+        const overallCoverage = process.getOverallCoverage(reportJson['report']);
+        core.info(`coverage: ${JSON.stringify(reportJson['report'], ' ', 4)}`);
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage.project.toFixed(2)));
 
@@ -68,37 +66,6 @@ async function addComment(prNumber, body, client) {
         repo: github.context.repo.repo,
         body: body
     });
-}
-
-async function getArtifact(client) {
-    let artifact_branch;
-    let artifact_owner = github.context.repo.owner;
-    let artifact_repo = github.context.repo.repo;
-
-    const repo = await client.rest.repos.get({
-        owner: artifact_owner,
-        repo: artifact_repo
-    })
-
-    artifact_branch = repo.data.default_branch
-
-    const artifact = await client.rest.repos.getContent({
-        owner: artifact_owner,
-        repo: artifact_repo,
-        path: '',
-        ref: artifact_branch
-    })
-
-    const result = await client.request('GET /repos/{owner}/{repo}/actions/artifacts', {
-        owner: artifact_owner,
-        repo: artifact_repo,
-        name: 'app-coverage-report'
-    })
-
-    core.info(`Artifacts repo: ${artifact_owner}/${artifact_repo}`)
-    core.info(`Artifacts branch: ${artifact_branch}`)
-    core.info(`Artifact: ${JSON.stringify(artifact.data)}`)
-    core.info(`Artifact: ${JSON.stringify(result)}`)
 }
 
 module.exports = {
