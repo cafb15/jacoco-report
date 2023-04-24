@@ -16345,13 +16345,19 @@ function getPRComment(overallCoverage, title) {
 function getOverallTable(coverage) {
     var status = getStatus(coverage);
     const project = coverage['project'];
+    const packages = coverage['packages'];
 
-    const tableHeader = `|Element|Instructions covered|Branches covered|`;
-
-    const content = `|${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|`;
+    const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
     const tableStructure = `|:-|:-:|:-:|`;
+    const footer = `|${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|${status}|`;
 
-    return tableHeader + '\n' + tableStructure + '\n' + content;
+    let content = '';
+
+    packages.forEach((item) => {
+        content += '\n' + getRow(item['name'], item['coverage']);
+    });
+
+    return `${tableHeader}\n${tableStructure}\n${footer}`;
 }
 
 function getTitle(title) {
@@ -16360,6 +16366,11 @@ function getTitle(title) {
     } else {
         return '';
     }
+}
+
+function getRow(name, instructionCoverage, branchCoverage) {
+    let status = getStatus(instructionCoverage);
+    return `|${name}|${formatCoverage(instructionCoverage)}|${formatCoverage(branchCoverage)}|${status}|`;
 }
 
 function getStatus(coverage) {
