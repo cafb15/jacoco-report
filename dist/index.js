@@ -16371,12 +16371,10 @@ function getOverallTable(coverage) {
 
     const tableHeader = `|Element|Instructions covered|Branches covered|`;
 
-    const content = `
-    |${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|
-    `;
+    const content = `|${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|`;
     const tableStructure = `|:-|:-:|:-:|`;
 
-    return tableHeader + content + '\n' + tableStructure;
+    return tableHeader + '\n' + content + '\n' + tableStructure;
 }
 
 function getTitle(title) {
