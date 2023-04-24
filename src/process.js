@@ -15,15 +15,25 @@ function getProjectCoverage(counters) {
 
     counters.forEach((counter) => {
         const attr = counter['$'];
+        let missed = 0;
+        let covered = 0;
 
         if (attr['type'] === 'INSTRUCTION') {
-            coverage.instuctionMissed = parseInt(attr['missed']);
-            coverage.instuctionCovered = parseInt(attr['covered']);
+            missed = parseInt(attr['missed']);
+            covered = parseInt(attr['covered']);
+
+            coverage.instuctionMissed = missed;
+            coverage.instuctionCovered = covered;
+            coverage.instructionPercentage = parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
         }
 
         if (attr['type'] === 'BRANCH') {
-            coverage.branchMissed = parseInt(attr['missed']);
-            coverage.branchCovered = parseInt(attr['covered']);
+            missed = parseInt(attr['missed']);
+            covered = parseInt(attr['covered']);
+
+            coverage.branchMissed = missed;
+            coverage.branchCovered = covered;
+            coverage.branchPercentage = parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
         }
     });
 
