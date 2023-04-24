@@ -16276,6 +16276,8 @@ async function getArtifact(client) {
         repo: artifact_repo
     })
 
+    artifact_branch = repo.data.default_branch
+
     const artifact = await client.rest.repos.getContent({
         owner: artifact_owner,
         repo: artifact_repo,
@@ -16288,8 +16290,6 @@ async function getArtifact(client) {
         repo: artifact_repo,
         name: 'app-coverage-report'
     })
-
-    artifact_branch = repo.data.default_branch
 
     core.info(`Artifacts repo: ${artifact_owner}/${artifact_repo}`)
     core.info(`Artifacts branch: ${artifact_branch}`)
