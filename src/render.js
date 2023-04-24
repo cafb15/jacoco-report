@@ -16,7 +16,7 @@ function getOverallTable(coverage) {
 
 function getTitle(title) {
     if (title != null && title.length > 0) {
-        return `###${title}\n`;
+        return `### ${title}\n`;
     } else {
         return '';
     }
