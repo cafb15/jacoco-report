@@ -14,14 +14,13 @@ function getOverallTable(coverage) {
     const tableStructure = `|:-|:-:|:-:|:-:|`;
     const footer = `|${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|${status}|`;
 
-    let content = '';
+    let table = `${tableHeader}\n${tableStructure}`;
 
     packages.forEach((item) => {
-        content += '\n' + getRow(item['name'], item['coverage']);
+        table += '\n' + getRow(item['name'], item['coverage']);
     });
 
-    //return tableHeader + '\n' + tableStructure + '\n' + content + '\n' + footer;
-    return `${tableHeader}\n${tableStructure}\n${content}\n${footer}`;
+    return `${table}\n${footer}`;
 }
 
 function getTitle(title) {
