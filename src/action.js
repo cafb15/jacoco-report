@@ -33,7 +33,6 @@ async function action() {
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
 
-        core.info(`report ${JSON.stringify(reportJson['report'], ' ', 4)}`)
         const overallCoverage = process.getOverallCoverage(reportJson['report'])
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage.project.toFixed(2)));
@@ -60,10 +59,11 @@ async function getJsonReport(jacocoPath) {
 }
 
 async function addComment(prNumber, body, client) {
-    await client.issues.createComment({
+    await client.rest.issues.createComment({
         issue_number: prNumber,
-        body: body,
-        ...github.context.repo
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        body: body
     });
 }
 
