@@ -7,11 +7,16 @@ function getPRComment(overallCoverage, title) {
 
 function getOverallTable(coverage) {
     var status = getStatus(coverage);
+    const project = coverage['project'];
 
-    const tableHeader = `|Coverage|${formatCoverage(coverage)}|${status}|`;
+    const tableHeader = `|Element|Instructions covered|Branches covered|`;
+
+    const content = `
+    |${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|
+    `;
     const tableStructure = `|:-|:-:|:-:|`;
 
-    return tableHeader + '\n' + tableStructure;
+    return tableHeader + content + '\n' + tableStructure;
 }
 
 function getTitle(title) {

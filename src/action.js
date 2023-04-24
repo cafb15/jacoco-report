@@ -39,13 +39,13 @@ async function action() {
         const report = reportJson['report'];
         printPackages(report['package']);
 
-        core.setOutput('coverage-overall', parseFloat(overallCoverage.project.percentage.toFixed(2)));
+        core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
         if (prNumber != null) {
             await addComment(
                 prNumber,
                 render.getPRComment(
-                    overallCoverage.project,
+                    overallCoverage,
                     title
                 ),
                 client

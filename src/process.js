@@ -1,11 +1,7 @@
 function getOverallCoverage(report) {
-    const module = {};
-    module.name = report['$'].name;
-    module.coverage = getModuleCoverage(report);
-
     const coverage = {};
+    coverage.name = report['$'].name;
     coverage.project = getProjectCoverage(report['counter']);
-    coverage.modudle = module;
 
     return coverage;
 }

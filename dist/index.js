@@ -16235,13 +16235,13 @@ async function action() {
         const report = reportJson['report'];
         printPackages(report['package']);
 
-        core.setOutput('coverage-overall', parseFloat(overallCoverage.project.percentage.toFixed(2)));
+        core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
         if (prNumber != null) {
             await addComment(
                 prNumber,
                 render.getPRComment(
-                    overallCoverage.project,
+                    overallCoverage,
                     title
                 ),
                 client
@@ -16287,13 +16287,9 @@ module.exports = {
 /***/ ((module) => {
 
 function getOverallCoverage(report) {
-    const module = {};
-    module.name = report['$'].name;
-    module.coverage = getModuleCoverage(report);
-
     const coverage = {};
+    coverage.name = report['$'].name;
     coverage.project = getProjectCoverage(report['counter']);
-    coverage.modudle = module;
 
     return coverage;
 }
@@ -16371,11 +16367,16 @@ function getPRComment(overallCoverage, title) {
 
 function getOverallTable(coverage) {
     var status = getStatus(coverage);
+    const project = coverage['project'];
 
-    const tableHeader = `|Coverage|${formatCoverage(coverage)}|${status}|`;
+    const tableHeader = `|Element|Instructions covered|Branches covered|`;
+
+    const content = `
+    |${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|
+    `;
     const tableStructure = `|:-|:-:|:-:|`;
 
-    return tableHeader + '\n' + tableStructure;
+    return tableHeader + content + '\n' + tableStructure;
 }
 
 function getTitle(title) {
