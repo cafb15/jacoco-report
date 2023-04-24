@@ -14,7 +14,7 @@ function getOverallTable(coverage) {
     const content = `|${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|`;
     const tableStructure = `|:-|:-:|:-:|`;
 
-    return tableHeader + '\n' + content + '\n' + tableStructure;
+    return tableHeader + '\n' + tableStructure + '\n' + content;
 }
 
 function getTitle(title) {
