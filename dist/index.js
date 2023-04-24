@@ -16292,28 +16292,27 @@ function getOverallCoverage(report) {
     module.coverage = getModuleCoverage(report);
 
     const coverage = {};
-    coverage.project = getProjectCoverage(report['package']);
+    coverage.project = getProjectCoverage(report['counter']);
     coverage.modudle = module;
 
     return coverage;
 }
 
-function getProjectCoverage(packages) {
+function getProjectCoverage(counters) {
     const coverage = {};
-    coverage.missed = 0;
-    coverage.covered = 0;
 
-    packages.forEach((item) => {
-        const counters = item['counter'];
+    counters.forEach((counter) => {
+        const attr = counter['$'];
 
-        counters.forEach((counter) => {
-            const attr = counter['$'];
+        if (attr['type'] === 'INSTRUCTION') {
+            coverage.instuctionMissed = parseInt(attr['missed']);
+            coverage.instuctionCovered = parseInt(attr['covered']);
+        }
 
-            if (attr['type'] === 'INSTRUCTION') {
-                coverage.missed += parseInt(attr['missed']);
-                coverage.covered += parseInt(attr['covered']);
-            }
-        });
+        if (attr['type'] === 'BRANCH') {
+            coverage.branchMissed = parseInt(attr['missed']);
+            coverage.branchCovered = parseInt(attr['covered']);
+        }
     });
 
     return coverage;
