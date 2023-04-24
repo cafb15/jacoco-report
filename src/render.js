@@ -11,7 +11,7 @@ function getOverallTable(coverage) {
     const packages = coverage['packages'];
 
     const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
-    const tableStructure = `|:-|:-:|:-:|`;
+    const tableStructure = `|:-|:-:|:-:|:-:|`;
     const footer = `|${coverage['name']}|${formatCoverage(project.instructionPercentage)}|${formatCoverage(project.branchPercentage)}|${status}|`;
 
     let content = '';
@@ -20,7 +20,8 @@ function getOverallTable(coverage) {
         content += '\n' + getRow(item['name'], item['coverage']);
     });
 
-    return tableHeader + '\n' + tableStructure + '\n' + content + '\n' + footer;
+    //return tableHeader + '\n' + tableStructure + '\n' + content + '\n' + footer;
+    return `${tableHeader}\n${tableStructure}\n${footer}`;
 }
 
 function getTitle(title) {
