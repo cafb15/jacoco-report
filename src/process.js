@@ -24,7 +24,7 @@ function getModuleCoverage(report) {
     const counters = report['counter'];
     const coverage = getDetailedCoverage(counters, 'INSTRUCTION');
 
-    return coverage.percentage;
+    return coverage;
 }
 
 function getDetailedCoverage(counters, type) {
