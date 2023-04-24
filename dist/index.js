@@ -16232,9 +16232,6 @@ async function action() {
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
         core.info(`overall: ${JSON.stringify(overallCoverage, ' ', 4)}`);
 
-        const report = reportJson['report'];
-        printPackages(report['package']);
-
         core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
         if (prNumber != null) {
@@ -16250,16 +16247,6 @@ async function action() {
     } catch (error) {
         core.setFailed(error);
     }
-}
-
-function printPackages(packages) {
-    packages.forEach((item) => {
-        const value = {};
-        value.name = item['$']['name'];
-        value.counter = item['counter'];
-
-        core.info(`coverage: ${JSON.stringify(value, ' ', 4)}`);
-    });
 }
 
 async function getJsonReport(jacocoPath) {
@@ -16289,12 +16276,25 @@ module.exports = {
 function getOverallCoverage(report) {
     const coverage = {};
     coverage.name = report['$'].name;
-    coverage.project = getProjectCoverage(report['counter']);
+    coverage.project = getDetailedCoverage(report['counter']);
+    coverage.packages = getPackagesCoverage(report['package'])
 
     return coverage;
 }
 
-function getProjectCoverage(counters) {
+function getPackagesCoverage(packages) {
+    const coverage = [];
+
+    packages.forEach((item) => {
+        const value = {};
+        value.name = item['$']['name'];
+        value.coverage = getDetailedCoverage(item['counter']);
+    });
+
+    return coverage;
+}
+
+function getDetailedCoverage(counters) {
     const coverage = {};
 
     counters.forEach((counter) => {
@@ -16318,31 +16318,6 @@ function getProjectCoverage(counters) {
             coverage.branchMissed = missed;
             coverage.branchCovered = covered;
             coverage.branchPercentage = parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
-        }
-    });
-
-    return coverage;
-}
-
-function getModuleCoverage(report) {
-    const counters = report['counter'];
-    const coverage = getDetailedCoverage(counters, 'INSTRUCTION');
-
-    return coverage;
-}
-
-function getDetailedCoverage(counters, type) {
-    const coverage = {};
-    counters.forEach((counter) => {
-        const attr = counter['$'];
-
-        if (attr['type'] === type) {
-            const missed = parseFloat(attr['missed']);
-            const covered = parseFloat(attr['covered']);
-
-            coverage.missed = missed;
-            coverage.covered = covered;
-            coverage.percentage = parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
         }
     });
 
