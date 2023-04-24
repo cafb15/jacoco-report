@@ -16280,18 +16280,29 @@ function getOverallCoverage(report) {
     module.coverage = getModuleCoverage(report);
 
     const coverage = {};
-    coverage.project = getProjectCoverage(report);
+    coverage.project = getProjectCoverage(report['package']);
     coverage.modudle = module;
 
     return coverage;
 }
 
-function getProjectCoverage(report) {
-    const coverage = getDetailedCoverage(report['counter'], 'INSTRUCTION');
+function getProjectCoverage(packages) {
+    const coverage = {};
+    coverage.missed = 0;
+    coverage.covered = 0;
 
-    const covered = coverage.covered
-    const missed = coverage.missed
-    coverage.percent = parseFloat(((covered / (covered + missed)) * 100).toFixed(2));
+    packages.forEach((item) => {
+        const counters = item['counter'];
+
+        counters.forEach((counter) => {
+            const attr = counter['$'];
+
+            if (attr['type'] === 'INSTRUCTION') {
+                coverage.missed += parseInt(attr['missed']);
+                coverage.covered += parseInt(attr['covered']);
+            }
+        });
+    });
 
     return coverage;
 }
