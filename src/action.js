@@ -34,9 +34,10 @@ async function action() {
         const reportJson = await reportJsonAsync;
 
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
-        core.info(`coverage: ${JSON.stringify(overallCoverage.project, ' ', 4)}`);
+        core.info(`overall: ${JSON.stringify(overallCoverage, ' ', 4)}`);
+        core.info(`coverage: ${JSON.stringify(reportJson, ' ', 4)}`);
 
-        core.setOutput('coverage-overall', parseFloat(overallCoverage.project.percent.toFixed(2)));
+        core.setOutput('coverage-overall', parseFloat(overallCoverage.project.percentage.toFixed(2)));
 
         if (prNumber != null) {
             await addComment(
