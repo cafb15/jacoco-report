@@ -34,7 +34,6 @@ async function action() {
         const reportJson = await reportJsonAsync;
 
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
-        core.info(`overall: ${JSON.stringify(overallCoverage, ' ', 4)}`);
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
