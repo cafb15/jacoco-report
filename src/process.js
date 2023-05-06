@@ -2,7 +2,7 @@ function getOverallCoverage(report) {
     const coverage = {};
     coverage.name = report['$'].name;
     coverage.project = getDetailedCoverage(report['counter']);
-    coverage.packages = getPackagesCoverage(report['package'])
+    coverage.packages = getPackagesCoverage(report['package']);
 
     return coverage;
 }

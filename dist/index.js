@@ -16240,7 +16240,8 @@ async function action() {
                     overallCoverage,
                     title
                 ),
-                client
+                client,
+                title
             );
         }
     } catch (error) {
@@ -16254,13 +16255,36 @@ async function getJsonReport(jacocoPath) {
     return await parser.parseStringPromise(jacocoReport);
 }
 
-async function addComment(prNumber, body, client) {
-    await client.rest.issues.createComment({
+async function addComment(prNumber, body, client, title) {
+    let commentUpdated = false;
+
+    const comments = await client.rest.issues.listComments({
         issue_number: prNumber,
         owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        body: body
+        repo: github.context.repo.repo
     });
+
+    const comment = comments.data.find((comment) => comment.body.startsWith(title));
+
+    if (comment) {
+        await client.rest.issues.updateComment({
+            comment_id: comment.id,
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            body: body
+        });
+
+        commentUpdated = true;
+    }
+
+    if (!commentUpdated) {
+        await client.rest.issues.createComment({
+            issue_number: prNumber,
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            body: body
+        });
+    }
 }
 
 module.exports = {
@@ -16276,7 +16300,7 @@ function getOverallCoverage(report) {
     const coverage = {};
     coverage.name = report['$'].name;
     coverage.project = getDetailedCoverage(report['counter']);
-    coverage.packages = getPackagesCoverage(report['package'])
+    coverage.packages = getPackagesCoverage(report['package']);
 
     return coverage;
 }

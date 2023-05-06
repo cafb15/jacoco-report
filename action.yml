@@ -9,7 +9,7 @@ inputs:
     required: true
   title:
     description: 'Optional title for the PR comment'
-    required: false
+    required: true
 outputs:
   coverage-overall:
     description: 'The overall coverage of the job'
