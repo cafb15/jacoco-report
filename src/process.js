@@ -1,10 +1,34 @@
-function getOverallCoverage(report) {
+function getOverallCoverage(report, jacocoRules) {
     const coverage = {};
     coverage.name = report['$'].name;
     coverage.project = getDetailedCoverage(report['counter']);
     coverage.packages = getPackagesCoverage(report['package']);
 
+    coverage.minimumInstruction = getInstructionRulesEnabledByModule(
+        coverage.name,
+        jacocoRules['instructions'],
+        jacocoRules['ignore']
+    );
+
     return coverage;
+}
+
+function getInstructionRulesEnabledByModule(moduleName, instructions, modulesIgnored) {
+    let minimumInstruction = instructions['threshold'];
+
+    instructions['modules'].forEach((item) => {
+        if (item['module'] === moduleName) {
+            minimumInstruction = item['threshold'];
+        }
+    });
+
+    modulesIgnored.forEach((module) => {
+        if (module === moduleName) {
+            minimumInstruction = 0.0;
+        }
+    });
+
+    return minimumInstruction;
 }
 
 function getPackagesCoverage(packages) {

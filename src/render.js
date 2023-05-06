@@ -5,11 +5,12 @@ function getPRComment(overallCoverage, title) {
     return heading + '\n\n' + overallTable
 }
 
-function getOverallTable(coverage, coverageRules) {
+function getOverallTable(coverage) {
     const project = coverage['project'];
     const packages = coverage['packages'];
+    const minimumInstruction = coverage['minimumInstruction'];
 
-    const status = getStatus(project.instructionPercentage);
+    const status = getStatus(project.instructionPercentage, minimumInstruction);
 
     const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
     const tableStructure = `|:-|:-:|:-:|:-:|`;
@@ -18,7 +19,7 @@ function getOverallTable(coverage, coverageRules) {
     let table = `${tableHeader}\n${tableStructure}`;
 
     packages.forEach((item) => {
-        table += '\n' + getRow(item['name'], item['coverage']);
+        table += '\n' + getRow(item['name'], item['coverage'], minimumInstruction);
     });
 
     return `${table}\n${footer}`;
@@ -32,13 +33,19 @@ function getTitle(title) {
     }
 }
 
-function getRow(name, coverage) {
-    let status = getStatus(coverage.instructionPercentage);
+function getRow(name, coverage, minimumInstruction) {
+    let status = getStatus(coverage.instructionPercentage, minimumInstruction);
     return `|${name}|${formatCoverage(coverage.instructionPercentage)}|${formatCoverage(coverage.branchPercentage)}|${status}|`;
 }
 
-function getStatus(coverage) {
-    return `:green_apple:`
+function getStatus(coverage, minimumInstruction) {
+    if (coverage < minimumInstruction) {
+        return `😭`;
+    } else if (coverage - minimumInstruction >= 1 && coverage - minimumInstruction <= 5) {
+        return `😱`;
+    } else {
+        return `🥳`;
+    }
 }
 
 function formatCoverage(coverage) {

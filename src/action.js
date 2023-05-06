@@ -9,7 +9,7 @@ async function action() {
     try {
         const jacocoPath = core.getInput('path');
         const title = core.getInput('title');
-        const jacocoRules = core.getInput('rules-path');
+        const jacocoRulesPath = core.getInput('rules-path');
         const event = github.context.eventName;
 
         core.info(`Event is ${event}`);
@@ -31,22 +31,10 @@ async function action() {
 
         const client = github.getOctokit(core.getInput('token'));
 
-        const reportJsonAsync = getJsonReport(jacocoPath);
-        const reportJson = await reportJsonAsync;
+        const reportJson = await getJsonReport(jacocoPath);
+        const jacocoRules = await getJacocoRules(jacocoRulesPath);
 
-        const rules = await getJacocoRules(jacocoRules);
-        const modules = rules['instructions']['modules'];
-
-        const overallCoverage = process.getOverallCoverage(reportJson['report']);
-
-        core.info(`modules ${JSON.stringify(modules)}`);
-        core.info(`module name ${JSON.stringify(overallCoverage['name'])}`);
-
-        modules.forEach((module) => {
-            if (module === overallCoverage['name']) {
-                core.info(`module ${module}`);
-            }
-        });
+        const overallCoverage = process.getOverallCoverage(reportJson['report'], jacocoRules);
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
@@ -55,8 +43,7 @@ async function action() {
                 prNumber,
                 render.getPRComment(
                     overallCoverage,
-                    title,
-                    rules
+                    title
                 ),
                 client,
                 title

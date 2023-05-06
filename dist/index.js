@@ -16205,7 +16205,7 @@ async function action() {
     try {
         const jacocoPath = core.getInput('path');
         const title = core.getInput('title');
-        const jacocoRules = core.getInput('rules-path');
+        const jacocoRulesPath = core.getInput('rules-path');
         const event = github.context.eventName;
 
         core.info(`Event is ${event}`);
@@ -16227,22 +16227,10 @@ async function action() {
 
         const client = github.getOctokit(core.getInput('token'));
 
-        const reportJsonAsync = getJsonReport(jacocoPath);
-        const reportJson = await reportJsonAsync;
+        const reportJson = await getJsonReport(jacocoPath);
+        const jacocoRules = await getJacocoRules(jacocoRulesPath);
 
-        const rules = await getJacocoRules(jacocoRules);
-        const modules = rules['instructions']['modules'];
-
-        const overallCoverage = process.getOverallCoverage(reportJson['report']);
-
-        core.info(`modules ${JSON.stringify(modules)}`);
-        core.info(`module name ${JSON.stringify(overallCoverage['name'])}`);
-
-        modules.forEach((module) => {
-            if (module === overallCoverage['name']) {
-                core.info(`module ${module}`);
-            }
-        });
+        const overallCoverage = process.getOverallCoverage(reportJson['report'], jacocoRules);
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
@@ -16251,8 +16239,7 @@ async function action() {
                 prNumber,
                 render.getPRComment(
                     overallCoverage,
-                    title,
-                    rules
+                    title
                 ),
                 client,
                 title
@@ -16316,13 +16303,37 @@ module.exports = {
 /***/ 643:
 /***/ ((module) => {
 
-function getOverallCoverage(report) {
+function getOverallCoverage(report, jacocoRules) {
     const coverage = {};
     coverage.name = report['$'].name;
     coverage.project = getDetailedCoverage(report['counter']);
     coverage.packages = getPackagesCoverage(report['package']);
 
+    coverage.minimumInstruction = getInstructionRulesEnabledByModule(
+        coverage.name,
+        jacocoRules['instructions'],
+        jacocoRules['ignore']
+    );
+
     return coverage;
+}
+
+function getInstructionRulesEnabledByModule(moduleName, instructions, modulesIgnored) {
+    let minimumInstruction = instructions['threshold'];
+
+    instructions['modules'].forEach((item) => {
+        if (item['module'] === moduleName) {
+            minimumInstruction = item['threshold'];
+        }
+    });
+
+    modulesIgnored.forEach((module) => {
+        if (module === moduleName) {
+            minimumInstruction = 0.0;
+        }
+    });
+
+    return minimumInstruction;
 }
 
 function getPackagesCoverage(packages) {
@@ -16385,11 +16396,12 @@ function getPRComment(overallCoverage, title) {
     return heading + '\n\n' + overallTable
 }
 
-function getOverallTable(coverage, coverageRules) {
+function getOverallTable(coverage) {
     const project = coverage['project'];
     const packages = coverage['packages'];
+    const minimumInstruction = coverage['minimumInstruction'];
 
-    const status = getStatus(project.instructionPercentage);
+    const status = getStatus(project.instructionPercentage, minimumInstruction);
 
     const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
     const tableStructure = `|:-|:-:|:-:|:-:|`;
@@ -16398,7 +16410,7 @@ function getOverallTable(coverage, coverageRules) {
     let table = `${tableHeader}\n${tableStructure}`;
 
     packages.forEach((item) => {
-        table += '\n' + getRow(item['name'], item['coverage']);
+        table += '\n' + getRow(item['name'], item['coverage'], minimumInstruction);
     });
 
     return `${table}\n${footer}`;
@@ -16412,13 +16424,19 @@ function getTitle(title) {
     }
 }
 
-function getRow(name, coverage) {
-    let status = getStatus(coverage.instructionPercentage);
+function getRow(name, coverage, minimumInstruction) {
+    let status = getStatus(coverage.instructionPercentage, minimumInstruction);
     return `|${name}|${formatCoverage(coverage.instructionPercentage)}|${formatCoverage(coverage.branchPercentage)}|${status}|`;
 }
 
-function getStatus(coverage) {
-    return `:green_apple:`
+function getStatus(coverage, minimumInstruction) {
+    if (coverage < minimumInstruction) {
+        return `😭`;
+    } else if (coverage - minimumInstruction >= 1 && coverage - minimumInstruction <= 5) {
+        return `😱`;
+    } else {
+        return `🥳`;
+    }
 }
 
 function formatCoverage(coverage) {
