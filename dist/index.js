@@ -16264,14 +16264,7 @@ async function addComment(prNumber, body, client, title) {
         repo: github.context.repo.repo
     });
 
-    core.info(`title ${title}`);
-    core.info(`prNumber ${prNumber}`);
-
-    comments.data.forEach((item) => {
-        core.info(`comment ${item.body}`);
-    });
-
-    const comment = comments.data.find((comment) => comment.body.startsWith(title));
+    const comment = comments.data.find((comment) => comment.body.startsWith(`### ${title}`));
 
     if (comment) {
         await client.rest.issues.updateComment({
