@@ -9,6 +9,7 @@ async function action() {
     try {
         const jacocoPath = core.getInput('path');
         const title = core.getInput('title');
+        const jacocoRules = core.getInput('rules-path');
         const event = github.context.eventName;
 
         core.info(`Event is ${event}`);
@@ -32,8 +33,20 @@ async function action() {
 
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
+        const rules = JSON.parse(jacocoRules);
+        const modules = rules['instructions']['modules'];
 
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
+
+        core.info(`rules ${rules}`);
+        core.info(`rules instructions ${rules['instructions']}`);
+        core.info(`modules ${modules}`);
+
+        modules.forEach((module) => {
+            if (module === overallCoverage['name']) {
+                core.info(`module ${module}`);
+            }
+        });
 
         core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
 
@@ -42,7 +55,8 @@ async function action() {
                 prNumber,
                 render.getPRComment(
                     overallCoverage,
-                    title
+                    title,
+                    rules
                 ),
                 client,
                 title

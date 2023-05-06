@@ -5,10 +5,11 @@ function getPRComment(overallCoverage, title) {
     return heading + '\n\n' + overallTable
 }
 
-function getOverallTable(coverage) {
-    var status = getStatus(coverage);
+function getOverallTable(coverage, coverageRules) {
     const project = coverage['project'];
     const packages = coverage['packages'];
+
+    const status = getStatus(project.instructionPercentage);
 
     const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
     const tableStructure = `|:-|:-:|:-:|:-:|`;

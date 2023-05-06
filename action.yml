@@ -4,6 +4,9 @@ inputs:
   path:
     description: 'path of the generated jacoco xml file'
     required: true
+  rules-path:
+    description: 'path of the json files with minimum coverage for each module'
+    required: true
   token:
     description: 'Github personal token to add commits to PR'
     required: true
