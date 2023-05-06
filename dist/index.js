@@ -16266,7 +16266,10 @@ async function addComment(prNumber, body, client, title) {
 
     core.info(`title ${title}`);
     core.info(`prNumber ${prNumber}`);
-    core.info(`comments ${comments.data}`);
+
+    comments.data.forEach((item) => {
+        core.info(`comment ${item}`);
+    });
 
     const comment = comments.data.find((comment) => comment.body.startsWith(title));
 
