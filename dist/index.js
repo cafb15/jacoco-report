@@ -16230,15 +16230,13 @@ async function action() {
         const reportJsonAsync = getJsonReport(jacocoPath);
         const reportJson = await reportJsonAsync;
 
-        core.info(`json ${jacocoRules}`);
         const rules = await getJacocoRules(jacocoRules);
         const modules = rules['instructions']['modules'];
 
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
 
-        core.info(`rules ${rules}`);
-        core.info(`rules instructions ${rules['instructions']}`);
-        core.info(`modules ${modules}`);
+        core.info(`modules ${JSON.stringify(modules)}`);
+        core.info(`module name ${JSON.stringify(overallCoverage['name'])}`);
 
         modules.forEach((module) => {
             if (module === overallCoverage['name']) {
