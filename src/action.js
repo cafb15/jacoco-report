@@ -68,6 +68,9 @@ async function addComment(prNumber, body, client, title) {
         repo: github.context.repo.repo
     });
 
+    core.info(`title ${title}`);
+    core.info(`comments ${comments}`);
+
     const comment = comments.data.find((comment) => comment.body.startsWith(title));
 
     if (comment) {
