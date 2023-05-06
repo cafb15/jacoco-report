@@ -35,7 +35,7 @@ async function action() {
         const reportJson = await reportJsonAsync;
 
         core.info(`json ${jacocoRules}`);
-        const rules = JSON.parse(jacocoRules);
+        const rules = await getJacocoRules(jacocoRules);
         const modules = rules['instructions']['modules'];
 
         const overallCoverage = process.getOverallCoverage(reportJson['report']);
@@ -73,6 +73,12 @@ async function getJsonReport(jacocoPath) {
     let parser = new xml2js.Parser(xml2js.defaults['0.2']);
     const jacocoReport = await fs.promises.readFile(jacocoPath.trim(), 'utf-8');
     return await parser.parseStringPromise(jacocoReport);
+}
+
+async function getJacocoRules(rulesPath) {
+    const jacocoRules = await fs.promises.readFile(rulesPath.trim(), 'utf-8')
+
+    return await JSON.parse(jacocoRules);
 }
 
 async function addComment(prNumber, body, client, title) {
