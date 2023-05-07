@@ -3,7 +3,10 @@ description: 'This is a basic github action for jacoco report'
 inputs:
   path:
     description: 'path of the generated jacoco xml file'
-    required: true
+    required: false
+  paths:
+    description: 'paths of the generated jacoco xml files'
+    required: false
   rules-path:
     description: 'path of the json files with minimum coverage for each module'
     required: true

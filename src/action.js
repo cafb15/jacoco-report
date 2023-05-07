@@ -8,11 +8,13 @@ const render = require('./render');
 async function action() {
     try {
         const jacocoPath = core.getInput('path');
+        const jacocoPaths = core.getInput('paths');
         const title = core.getInput('title');
         const jacocoRulesPath = core.getInput('rules-path');
         const event = github.context.eventName;
 
         core.info(`Event is ${event}`);
+        core.info(`jacoco paths ${jacocoPaths}`);
 
         let base;
         let head;
