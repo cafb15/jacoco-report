@@ -1,3 +1,5 @@
+const core = require("@actions/core");
+
 function getOverallCoverage(report, jacocoRules) {
     const coverage = {};
     coverage.name = report['$'].name;
@@ -19,6 +21,7 @@ function getProjectCoverage(reports, jacocoRules) {
     reports.forEach((item) => {
         const module = {};
 
+        core.info(`item ${JSON.stringify(item)}`);
         module.name = item['$'].name;
         module.project = getDetailedCoverage(item['counter']);
         module.minimumInstruction = getInstructionRulesEnabledByModule(

@@ -16319,7 +16319,9 @@ module.exports = {
 /***/ }),
 
 /***/ 643:
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(115);
 
 function getOverallCoverage(report, jacocoRules) {
     const coverage = {};
@@ -16342,6 +16344,7 @@ function getProjectCoverage(reports, jacocoRules) {
     reports.forEach((item) => {
         const module = {};
 
+        core.info(`item ${JSON.stringify(item)}`);
         module.name = item['$'].name;
         module.project = getDetailedCoverage(item['counter']);
         module.minimumInstruction = getInstructionRulesEnabledByModule(
