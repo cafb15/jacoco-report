@@ -14,7 +14,6 @@ async function action() {
         const event = github.context.eventName;
 
         core.info(`Event is ${event}`);
-        core.info(`jacoco paths ${jacocoPaths}`);
 
         let base;
         let head;
@@ -66,6 +65,8 @@ async function reportForSinglePath(jacocoPath, jacocoRules, prNumber, title, cli
 
 async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client) {
     const reports = jacocoPaths.split(',').map(async (report) => await getJsonReport(report));
+
+    core.info(`reports ${reports}`);
 
     const coverage = process.getProjectCoverage(reports, jacocoRules);
 
