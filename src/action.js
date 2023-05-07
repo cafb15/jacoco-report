@@ -64,7 +64,7 @@ async function reportForSinglePath(jacocoPath, jacocoRules, prNumber, title, cli
 }
 
 async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client) {
-    const reports = jacocoPaths.split(',').map(async (report) => await getJsonReport(report));
+    const reports = await Promise.all(jacocoPaths.split(',').map(async (report) => await getJsonReport(report)));
 
     core.info(`reports ${reports}`);
 
