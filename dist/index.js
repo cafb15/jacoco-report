@@ -16228,28 +16228,44 @@ async function action() {
         core.info(`head sha: ${head}`)
 
         const client = github.getOctokit(core.getInput('token'));
-
-        const reportJson = await getJsonReport(jacocoPath);
         const jacocoRules = await getJacocoRules(jacocoRulesPath);
 
-        const overallCoverage = process.getOverallCoverage(reportJson['report'], jacocoRules);
-
-        core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
-
-        if (prNumber != null) {
-            await addComment(
-                prNumber,
-                render.getPRComment(
-                    overallCoverage,
-                    title
-                ),
-                client,
-                title
-            );
+        if (jacocoPath !== "") {
+            await reportForSinglePath(jacocoPath, jacocoRules, prNumber, title, client);
+        } else if (jacocoPaths !== "") {
+            await reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client);
         }
     } catch (error) {
         core.setFailed(error);
     }
+}
+
+async function reportForSinglePath(jacocoPath, jacocoRules, prNumber, title, client) {
+    const reportJson = await getJsonReport(jacocoPath);
+
+    const overallCoverage = process.getOverallCoverage(reportJson['report'], jacocoRules);
+
+    core.setOutput('coverage-overall', parseFloat(overallCoverage['project'].instructionPercentage.toFixed(2)));
+
+    if (prNumber != null) {
+        await addComment(
+            prNumber,
+            render.getPRComment(
+                overallCoverage,
+                title
+            ),
+            client,
+            title
+        );
+    }
+}
+
+async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client) {
+    const reports = jacocoPaths.split(',').map(async (report) => await getJsonReport(report));
+
+    const coverage = process.getProjectCoverage(reports, jacocoRules);
+
+    core.info(`coverage ${coverage}`);
 }
 
 async function getJsonReport(jacocoPath) {
@@ -16320,6 +16336,24 @@ function getOverallCoverage(report, jacocoRules) {
     return coverage;
 }
 
+function getProjectCoverage(reports, jacocoRules) {
+    const coverage = [];
+
+    reports.forEach((item) => {
+        const module = {};
+
+        module.name = item['$'].name;
+        module.project = getDetailedCoverage(item['counter']);
+        module.minimumInstruction = getInstructionRulesEnabledByModule(
+            module.name,
+            jacocoRules['instructions'],
+            jacocoRules['ignore']
+        )
+    });
+
+    return coverage;
+}
+
 function getInstructionRulesEnabledByModule(moduleName, instructions, modulesIgnored) {
     let minimumInstruction = instructions['threshold'];
 
@@ -16383,7 +16417,8 @@ function getDetailedCoverage(counters) {
 }
 
 module.exports = {
-    getOverallCoverage
+    getOverallCoverage,
+    getProjectCoverage
 }
 
 /***/ }),

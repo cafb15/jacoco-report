@@ -13,6 +13,24 @@ function getOverallCoverage(report, jacocoRules) {
     return coverage;
 }
 
+function getProjectCoverage(reports, jacocoRules) {
+    const coverage = [];
+
+    reports.forEach((item) => {
+        const module = {};
+
+        module.name = item['$'].name;
+        module.project = getDetailedCoverage(item['counter']);
+        module.minimumInstruction = getInstructionRulesEnabledByModule(
+            module.name,
+            jacocoRules['instructions'],
+            jacocoRules['ignore']
+        )
+    });
+
+    return coverage;
+}
+
 function getInstructionRulesEnabledByModule(moduleName, instructions, modulesIgnored) {
     let minimumInstruction = instructions['threshold'];
 
@@ -76,5 +94,6 @@ function getDetailedCoverage(counters) {
 }
 
 module.exports = {
-    getOverallCoverage
+    getOverallCoverage,
+    getProjectCoverage
 }
