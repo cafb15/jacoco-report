@@ -67,15 +67,11 @@ async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client)
     const reports = [];
 
     for (const report of jacocoPaths.split(',')) {
-        core.info(`report ${report}`);
-
         const reportJson = await getJsonReport(report);
-
-        core.info(`report ${JSON.stringify(reportJson)}`);
         reports.push(reportJson);
     }
 
-    core.info(`reports ${reports}`);
+    core.info(`reports ${JSON.stringify(reports)}`);
 
     const coverage = process.getProjectCoverage(reports, jacocoRules);
 
