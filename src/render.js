@@ -39,7 +39,9 @@ function getRow(name, coverage, minimumInstruction) {
 }
 
 function getStatus(coverage, minimumInstruction) {
-    if (coverage < minimumInstruction) {
+    if (minimumInstruction === 0.0) {
+        return ``;
+    } else if (coverage < minimumInstruction) {
         return `😭`;
     } else if (coverage - minimumInstruction >= 1 && coverage - minimumInstruction <= 5) {
         return `😱`;
