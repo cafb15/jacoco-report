@@ -22,7 +22,7 @@ function getProjectCoverage(reports, jacocoRules) {
         const module = {};
 
         core.info(`item ${JSON.stringify(item)}`);
-        module.name = item['$'].name;
+        module.name = item['$']['name'];
         module.project = getDetailedCoverage(item['counter']);
         module.minimumInstruction = getInstructionRulesEnabledByModule(
             module.name,
