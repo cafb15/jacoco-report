@@ -16262,7 +16262,9 @@ async function reportForSinglePath(jacocoPath, jacocoRules, prNumber, title, cli
 async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client) {
     const reports = [];
 
-    for (const report of jacocoPaths) {
+    for (const report of jacocoPaths.split(',')) {
+        core.info(`report ${report}`);
+
         const reportJson = await getJsonReport(report);
 
         core.info(`report ${JSON.stringify(reportJson)}`);
