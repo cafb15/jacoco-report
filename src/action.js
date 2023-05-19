@@ -73,7 +73,19 @@ async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client)
 
     const coverage = process.getProjectCoverage(reports, jacocoRules);
 
-    core.info(`coverage ${coverage}`);
+    core.info(`coverage: ${JSON.stringify(coverage)}`);
+
+    if (prNumber != null) {
+        await addComment(
+            prNumber,
+            render.getPRProjectComment(
+                coverage,
+                title
+            ),
+            client,
+            title
+        )
+    }
 }
 
 async function getJsonReport(jacocoPath) {

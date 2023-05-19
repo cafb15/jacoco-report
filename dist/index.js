@@ -16269,7 +16269,19 @@ async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client)
 
     const coverage = process.getProjectCoverage(reports, jacocoRules);
 
-    core.info(`coverage ${coverage}`);
+    core.info(`coverage: ${JSON.stringify(coverage)}`);
+
+    if (prNumber != null) {
+        await addComment(
+            prNumber,
+            render.getPRProjectComment(
+                coverage,
+                title
+            ),
+            client,
+            title
+        )
+    }
 }
 
 async function getJsonReport(jacocoPath) {
@@ -16348,7 +16360,6 @@ function getProjectCoverage(reports, jacocoRules) {
     reports.forEach((item) => {
         const module = {};
 
-        core.info(`item ${item['$'].name}`);
         module.name = item['$'].name;
         module.project = getDetailedCoverage(item['counter']);
         module.minimumInstruction = getInstructionRulesEnabledByModule(
@@ -16356,6 +16367,8 @@ function getProjectCoverage(reports, jacocoRules) {
             jacocoRules['instructions'],
             jacocoRules['ignore']
         )
+
+        coverage.push(module);
     });
 
     return coverage;
@@ -16440,6 +16453,19 @@ function getPRComment(overallCoverage, title) {
     return heading + '\n\n' + overallTable
 }
 
+function getPRProjectComment(coverage, title) {
+    const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
+    const tableStructure = `|:-|:-:|:-:|:-:|`;
+
+    let table = `${tableHeader}\n${tableStructure}`;
+
+    coverage.forEach((item) => {
+        table += '\n' + getRow(item['name'], item['project'], item['minimumInstruction']);
+    });
+
+    return table;
+}
+
 function getOverallTable(coverage) {
     const project = coverage['project'];
     const packages = coverage['packages'];
@@ -16490,7 +16516,8 @@ function formatCoverage(coverage) {
 }
 
 module.exports = {
-    getPRComment
+    getPRComment,
+    getPRProjectComment
 }
 
 /***/ }),

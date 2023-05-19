@@ -5,6 +5,19 @@ function getPRComment(overallCoverage, title) {
     return heading + '\n\n' + overallTable
 }
 
+function getPRProjectComment(coverage, title) {
+    const tableHeader = `|Element|Instructions covered|Branches covered|Status|`;
+    const tableStructure = `|:-|:-:|:-:|:-:|`;
+
+    let table = `${tableHeader}\n${tableStructure}`;
+
+    coverage.forEach((item) => {
+        table += '\n' + getRow(item['name'], item['project'], item['minimumInstruction']);
+    });
+
+    return table;
+}
+
 function getOverallTable(coverage) {
     const project = coverage['project'];
     const packages = coverage['packages'];
@@ -55,5 +68,6 @@ function formatCoverage(coverage) {
 }
 
 module.exports = {
-    getPRComment
+    getPRComment,
+    getPRProjectComment
 }
