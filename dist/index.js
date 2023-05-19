@@ -16264,7 +16264,7 @@ async function reportForPaths(jacocoPaths, jacocoRules, prNumber, title, client)
 
     for (const report of jacocoPaths.split(',')) {
         const reportJson = await getJsonReport(report);
-        reports.push(reportJson);
+        reports.push(reportJson['report']);
     }
 
     const coverage = process.getProjectCoverage(reports, jacocoRules);
@@ -16348,8 +16348,8 @@ function getProjectCoverage(reports, jacocoRules) {
     reports.forEach((item) => {
         const module = {};
 
-        core.info(`item ${item['$']['name']}`);
-        module.name = item['$']['name'];
+        core.info(`item ${item['$'].name}`);
+        module.name = item['$'].name;
         module.project = getDetailedCoverage(item['counter']);
         module.minimumInstruction = getInstructionRulesEnabledByModule(
             module.name,
