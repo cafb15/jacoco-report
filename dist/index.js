@@ -16348,7 +16348,7 @@ function getProjectCoverage(reports, jacocoRules) {
     reports.forEach((item) => {
         const module = {};
 
-        core.info(`item ${JSON.stringify(item)}`);
+        core.info(`item ${item['$']['name']}`);
         module.name = item['$']['name'];
         module.project = getDetailedCoverage(item['counter']);
         module.minimumInstruction = getInstructionRulesEnabledByModule(
